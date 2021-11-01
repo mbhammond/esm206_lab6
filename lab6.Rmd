@@ -5,7 +5,7 @@ date: "11/1/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(palmerpenguins)
@@ -62,3 +62,64 @@ If the samples are pulled from the populations with the same ranks of values (me
 There is no significant difference in ranks (often you'll see medians) between group 1 and group 2. 
 
 Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly (Mann Whitney U test: U(df) = 86, p = 0.28)
+
+## Linear Regression
+
+Simple linear regression (single dependent variable, a single independent variable)
+
+```{r}
+# Make an exploratory plot of penguin body mass vs. flipper length (x-axis)
+
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point() +
+  geom_smooth(method = "lm") #lm stands for linear model
+```
+
+Find a linear regression model using ordinary least squares describing the relationship between flipper length and body mass for these penguins.
+
+3 pieces:
+
+- What type of model?
+- What is the relationship to model (DV ~ IV(s))
+- Where is the data that's used to create this model?
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+
+# y = mx + b
+# body mass = flipper length*(something) + something
+# body mass = flipper length * 49.69 - 5780.83
+# for every 1 mm increase for flipper length, I expect 49.7 g increase of body mass.
+# 49.69 g/mm
+# -5780.8 g. The y-intercept. 
+```
+
+### broom package returns model outputs as tidy data frames
+
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm)
+
+penguin_lm_tidy
+
+glance(penguin_lm)
+
+```
+
+How can I actually include my model equation in a report?
+
+```{r}
+ex1 <- extract_eq(model = penguin_lm, use_coefs = TRUE)
+
+ex1
+
+
+```
+
+```{r}
+plot(penguin_lm)
+
+# This creates 4 plots, all to show us the residuals and the normalcy. 
+# Residuals vs Fitted, Normal Q-Q, Scale-Location, Residuals vs Leverage. I should probably look into these more cuz I could stand to understand them better. 
+#heterosedastic. The variance residuals change throughout the model. 
+```
+
