@@ -1,0 +1,64 @@
+---
+title: "lab6"
+author: "Margaret Hammond"
+date: "11/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+library(equatiomatic)
+```
+
+## Example of a rank-based test
+
+We'll make our own samples using a pseudorandom generator.
+
+```{r}
+set.seed(1414)
+gp_1 <- sample.int(20, size = 15, replace = TRUE)
+# through set.seed, we all have the same random sample
+
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE)
+```
+
+## Histogram
+
+```{r}
+hist(gp_1)
+
+hist(gp_2)
+```
+
+Try a t-test:
+```{r}
+t.test(gp_1, gp_2)
+```
+
+What is the meaning of the p-value?
+There is a 19% chance that from these populations, we would randomly select the same difference. (my guess)
+
+#### Correct Definition
+**If the samples are pulled from the populations with the same mean, there is a 19% chance that we will find sample means at least as different as ours by random chance.**
+If these samples were drawn from populations with the same mean, the probability of taking two random samples with means *at least as different* as the sample means we found by random chance (taking into account spread, n) which is 19.8%
+We would accept the null hypot. 
+Retain (fail to reject) the null hypothesis.
+
+Warning: people get weirdly upset if you say "accept" the null. 
+
+```{r}
+mwu <- wilcox.test(gp_1, gp_2)
+
+mwu
+```
+
+What the p value means
+If the samples are pulled from the populations with the same ranks of values (medians), the probability of finding two samples with ranks *at least as different* as those in our samples is 0.28.
+
+There is no significant difference in ranks (often you'll see medians) between group 1 and group 2. 
+
+Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly (Mann Whitney U test: U(df) = 86, p = 0.28)
